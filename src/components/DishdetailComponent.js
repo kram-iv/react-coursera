@@ -12,7 +12,7 @@ import moment from 'moment';
             return (
                 <li key={comment.id}>
                     <p>{comment.comment}</p>
-                    <p>-- {comment.author},                  
+                    <p>-- {comment.author},
                     { moment(comment.date).format("ll")}
                     </p>
                 </li>
@@ -48,7 +48,8 @@ import moment from 'moment';
         }
     }
 
-    const  DishDetail = (props) => {
+    function DishDetail(props) {
+    //const DishDetail = (props) => {
         const dish = props.dish
         if (dish == null) {
             return (<div></div>)
