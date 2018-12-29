@@ -46,7 +46,6 @@ class Menu extends Component {
 export default Menu;
 
 
-
 /*
 //Basic minimum to create a component.
 
