@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Card, CardImg, CardBody, CardText, CardTitle, Breadcrumb, BreadcrumbItem, Modal
-         ,ModalHeader, ModalBody, Label, Button, Col, Row } from 'reactstrap';
+         ,ModalHeader, ModalBody, Label, Button} from 'reactstrap';
 import {Control, LocalForm, Errors } from 'react-redux-form';
 import {Link} from 'react-router-dom';
 //import moment from 'moment';
