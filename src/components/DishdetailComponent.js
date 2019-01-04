@@ -3,6 +3,7 @@ import { Card, CardImg, CardBody, CardText, CardTitle, Breadcrumb, BreadcrumbIte
          ,ModalHeader, ModalBody, Label, Button} from 'reactstrap';
 import {Control, LocalForm, Errors } from 'react-redux-form';
 import {Link} from 'react-router-dom';
+import { Loading } from './LoadingComponent';
 //import moment from 'moment';
 
 const required    = (val) => val && val.length;
@@ -20,7 +21,7 @@ class CommentForm extends Component {
             isModalOpen: false
         };
       this.toggleModal          = this.toggleModal.bind(this);
-      this.handleCommentSubmit  = this.handleCommentSubmit.bind(this);
+      this.handleCommentSubmit  = this.handleCommentSubmit.bind(this);      
     }
 
     toggleModal()  {
@@ -31,6 +32,7 @@ class CommentForm extends Component {
 
     handleCommentSubmit (values) {
         this.toggleModal();
+        this.props.addComment(this.props.dishId, values.rating, values.author, values.comment);
         console.log("Current State is: " + JSON.stringify(values));
         alert("Current State is: " + JSON.stringify(values));
 
@@ -58,8 +60,8 @@ class CommentForm extends Component {
                                 </Control.select>
                             </div>
                             <div className="form-group">
-                                <Label htmlFor="name">Your Name </Label>
-                                <Control.text model=".name" id="name" name="name" placeholder="Your Name"
+                                <Label htmlFor="author">Your Name </Label>
+                                <Control.text model=".author" id="author" name="author" placeholder="Your Name"
                                     className="form-control"
                                     validators={{
                                         required, minLength: minLength(3), maxLength: maxLength(15)
@@ -94,7 +96,7 @@ class CommentForm extends Component {
     }
 
 }
-    function RenderComments({comments}) {
+    function RenderComments({comments, addComment, dishId}) {
         if (comments == null) {
             return (<div></div>)
         }
@@ -115,7 +117,7 @@ class CommentForm extends Component {
                 <ul className='list-unstyled'>
                     {cmnts}
                 </ul>
-                <CommentForm/>
+                <CommentForm dishId={dishId} addComment={addComment} />
             </div>
         )
     }
@@ -141,32 +143,57 @@ class CommentForm extends Component {
 
     function DishDetail(props) {
     //const DishDetail = (props) => {
-        const dish = props.dish
-        if (dish == null) {
+        //const dish = props.dish
+
+        if (props.isLoading) {
+            return(
+                <div className="container">
+                    <div className="row">            
+                        <Loading />
+                    </div>
+                </div>
+            );
+        }
+        else if (props.errMess) {
+            return(
+                <div className="container">
+                    <div className="row">            
+                        <h4>{props.errMess}</h4>
+                    </div>
+                </div>
+            );
+        }
+        else if (props.dish != null) {
+
+            return (
+                <div className='container'>
+                    <div className="row">
+                        <Breadcrumb>
+                            <BreadcrumbItem> <Link to='/home'> Home </Link> </BreadcrumbItem>
+                            <BreadcrumbItem> <Link to='/menu'> Menu </Link> </BreadcrumbItem>
+                            <BreadcrumbItem active> {props.dish.name} </BreadcrumbItem>
+                        </Breadcrumb>
+                    </div>
+                    <div className="col-12">
+                        <h3> {props.dish.name}</h3>
+                        <hr/>
+                    </div>
+
+                    <div className="row">
+                        <RenderDish dish={props.dish} />
+                        <RenderComments comments={props.comments}
+                            addComment={props.addComment}
+                            dishId={props.dish.id}
+                        />
+                    </div>
+                </div>
+            )
+        }
+        else if (props.dish == null) {
             return (<div></div>)
         }
         //const dishItem = this.renderDish(dish)
 
-        return (
-            <div className='container'>
-                <div className="row">
-                    <Breadcrumb>
-                        <BreadcrumbItem> <Link to='/home'> Home </Link> </BreadcrumbItem>
-                        <BreadcrumbItem> <Link to='/menu'> Menu </Link> </BreadcrumbItem>
-                        <BreadcrumbItem active> {props.dish.name} </BreadcrumbItem>
-                    </Breadcrumb>
-                </div>
-                <div className="col-12">
-                    <h3> {props.dish.name}</h3>
-                    <hr/>
-                </div>
-
-                <div className="row">
-                    <RenderDish dish={props.dish} />
-                    <RenderComments comments={props.comments} />
-                </div>
-            </div>
-        )
     }
 
 
