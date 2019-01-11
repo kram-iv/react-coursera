@@ -2,17 +2,49 @@ import * as ActionTypes from './ActionTypes';
 import { baseUrl } from '../shared/baseUrl';
 
 
-export const addComment = (dishId, rating, author, comment) => ({
+export const addComment = ( comment) => ({
     type: ActionTypes.ADD_COMMENT,
-    payload: {
+    payload: comment
+});
+
+/* postComment is a thunk */
+/* dispatch is a function which needs to be added to postComment thunk function.Thunk is a function of function.*/
+export const postComment = (dishId, rating, author, comment) => (dispatch) => {
+    const newComment = {
         dishId: dishId,
         rating: rating,
         author: author,
         comment: comment
-    }
-});
-
+    };
+    newComment.date = new Date().toISOString();
+    return fetch(baseUrl + 'comments', {
+        method:'POST',
+        body: JSON.stringify(newComment),
+        headers: {
+            'COntent-Type': 'application/json'
+        },
+        credentials: 'same-origin'
+    })
+    .then(response => {
+        if ( response.ok) {
+            return response;
+        }
+        else {
+            var error = new Error('Error ' + response.status + ': ' + response.statusText);
+            error.response = response;
+            throw error;
+        }
+    }, error => {
+            var errmess = new Error( error.message);
+            throw errmess;
+    })
+    .then(response => response.json())
+    .then(response => dispatch(addComment(response)))
+    .catch(error =>  { console.log('post comments', error.message); 
+                       alert('Your comment could not be posted\nError: ' + error.message); });
+};
 /* fetchDishes is a thunk */
+/* dispatch is a function which needs to be added to fetchDishes thunk function.Thunk is a function of function.*/
 export const fetchDishes = () => (dispatch) => {
 
     dispatch(dishesLoading(true));
