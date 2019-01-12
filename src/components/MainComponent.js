@@ -8,15 +8,20 @@ import Contact from './ContactComponent';
 import About from './AboutComponent';
 import { Switch, Route, Redirect, withRouter } from 'react-router-dom';
 import { connect} from 'react-redux';
-import { postComment,fetchDishes, fetchComments, fetchPromos } from '../redux/ActionCreators';
+import { actions } from 'react-redux-form';
+import { postComment,fetchDishes, fetchComments, fetchPromos, fetchLeaders, postFeedback } from '../redux/ActionCreators';
+import { TransitionGroup, CSSTransition } from 'react-transition-group';
 
 const mapDispatchToProps = dispatch => ({
   
     postComment: (dishId, rating, author, comment) => dispatch(postComment(dishId, rating, author, comment)),
     fetchDishes: () => { dispatch(fetchDishes())}, /* fetchDishes() is a thunk and we are dispatching the thunk using dispatch method in mapDispatchToProps.*/
-    //resetFeedbackForm: () => { dispatch(actions.reset('feedback'))},
-    fetchComments: () => dispatch(fetchComments()),
-    fetchPromos: () => dispatch(fetchPromos())    
+    resetFeedbackForm: () => { dispatch(actions.reset('feedback'))},
+    fetchComments: () => { dispatch(fetchComments()) },
+    fetchPromos: () => { dispatch(fetchPromos()) },
+    fetchLeaders: () => { dispatch(fetchLeaders()) },
+    postFeedback: (firstName, lastName, telNumber, email, agree, selection, feedback) => 
+                  dispatch(postFeedback(firstName, lastName, telNumber, email, agree, selection, feedback))
   });
 
 const mapStateToProps = state => {
@@ -44,7 +49,8 @@ class Main extends Component {
   componentDidMount() {
     this.props.fetchDishes();
     this.props.fetchComments();
-    this.props.fetchPromos();    
+    this.props.fetchPromos();
+    this.props.fetchLeaders();
   }  
 /*
   onDishSelect(dishId) {
@@ -62,7 +68,9 @@ class Main extends Component {
                 promotion={this.props.promotions.promotions.filter((promo) => promo.featured)[0]}
                 promoLoading={this.props.promotions.isLoading}
                 promoErrMess={this.props.promotions.errMess}                
-                leader={this.props.leaders.filter((leader) => leader.featured)[0]}
+                leader={this.props.leaders.leaders.filter((leader) => leader.featured)[0]}
+                leaderLoading={this.props.leaders.isLoading}
+                leaderErrMess={this.props.leaders.errMess}                 
             />
         );
     }
@@ -83,16 +91,19 @@ class Main extends Component {
         <Header />
         {/*<Menu dishes={this.props.dishes} onClick={(dishId) => this.onDishSelect(dishId)} />*/}
         {/*<DishDetail dish={this.props.dishes.filter((dish) => dish.id === this.props.selectedDish)[0]} />*/}
-
-        <Switch>
-            <Route path='/home' component={HomePage} />
-            <Route exact path='/menu' component={() => <Menu dishes={this.props.dishes} />} />
-            <Route path='/menu/:dishId' component={DishWithId} />} />
-            <Route exact path='/contactus' component={Contact} />} />
-            <Route exact path='/aboutus' component={() => <About leaders={this.props.leaders} />} />
-            <Redirect to="/home" />
-        </Switch>
-
+        <TransitionGroup>
+          <CSSTransition key={this.props.location.key} classNames="page" timeout={300}>
+            <Switch location={this.props.location}>
+                <Route path='/home' component={HomePage} />
+                <Route exact path='/menu' component={() => <Menu dishes={this.props.dishes} />} />
+                <Route path='/menu/:dishId' component={DishWithId} />} />
+                <Route exact path='/contactus' component={ () => <Contact postFeedback={this.props.postFeedback} 
+                                                                          resetFeedbackForm={this.props.resetFeedbackForm}  />} />
+                <Route exact path='/aboutus' component={() => <About leaders={this.props.leaders} />} />
+                <Redirect to="/home" />
+            </Switch>
+            </CSSTransition>
+          </TransitionGroup>
         <Footer />
       </div>
     );

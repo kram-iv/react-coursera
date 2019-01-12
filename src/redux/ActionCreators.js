@@ -21,7 +21,7 @@ export const postComment = (dishId, rating, author, comment) => (dispatch) => {
         method:'POST',
         body: JSON.stringify(newComment),
         headers: {
-            'COntent-Type': 'application/json'
+            'Content-Type': 'application/json'
         },
         credentials: 'same-origin'
     })
@@ -40,7 +40,7 @@ export const postComment = (dishId, rating, author, comment) => (dispatch) => {
     })
     .then(response => response.json())
     .then(response => dispatch(addComment(response)))
-    .catch(error =>  { console.log('post comments', error.message); 
+    .catch(error =>  { console.log('post comments', error.message);
                        alert('Your comment could not be posted\nError: ' + error.message); });
 };
 /* fetchDishes is a thunk */
@@ -88,7 +88,7 @@ export const addDishes = (dishes) => ({
 });
 
 /* fetchComments is a thunk */
-export const fetchComments = () => (dispatch) => {    
+export const fetchComments = () => (dispatch) => {
     return fetch(baseUrl + 'comments')
     .then(response => {
         if ( response.ok) {
@@ -102,7 +102,7 @@ export const fetchComments = () => (dispatch) => {
     }, error => {
             var errmess = new Error( error.message);
             throw errmess;
-    })    
+    })
     .then(response => response.json())
     .then(comments => dispatch(addComments(comments)))
     .catch(error => dispatch(commentsFailed(error.message)));
@@ -119,7 +119,7 @@ export const addComments = (comments) => ({
 });
 
 export const fetchPromos = () => (dispatch) => {
-    
+
     dispatch(promosLoading());
 
     return fetch(baseUrl + 'promotions')
@@ -135,7 +135,7 @@ export const fetchPromos = () => (dispatch) => {
     }, error => {
             var errmess = new Error( error.message);
             throw errmess;
-    })    
+    })
     .then(response => response.json())
     .then(promos => dispatch(addPromos(promos)))
     .catch(error => dispatch(promosFailed(error.message)));
@@ -154,3 +154,87 @@ export const addPromos = (promos) => ({
     type: ActionTypes.ADD_PROMOS,
     payload: promos
 });
+
+/* fetchLeaders is a thunk */
+/* dispatch is a function which needs to be added to fetchLeaders thunk function.Thunk is a function of function.*/
+export const fetchLeaders = () => (dispatch) => {
+
+    dispatch(leadersLoading(true));
+
+    return fetch(baseUrl + 'leaders')
+    .then(response => {
+        if ( response.ok) {
+            return response;
+        }
+        else {
+            var error = new Error('Error ' + response.status + ': ' + response.statusText);
+            error.response = response;
+            throw error;
+        }
+    }, error => {
+            var errmess = new Error( error.message);
+            throw errmess;
+    })
+    .then(response => response.json())
+    .then(leaders => dispatch(addLeaders(leaders)))
+    .catch(error => dispatch(leadersFailed(error.message)));
+}
+
+export const leadersLoading = () => ({
+    type: ActionTypes.LEADERS_LOADING
+});
+
+export const leadersFailed = (errmess) => ({
+    type: ActionTypes.LEADERS_FAILED,
+    payload: errmess
+});
+
+export const addLeaders = (leaders) => ({
+    type: ActionTypes.ADD_LEADERS,
+    payload: leaders
+});
+
+export const addFeedback = ( feedback) => ({
+    type   : ActionTypes.ADD_FEEDBACK,
+    payload: feedback
+});
+
+/* postFeedback is a thunk */
+/* dispatch is a function which needs to be added to postFeedback thunk function.Thunk is a function of function.*/
+export const postFeedback = (firstName, lastName, telNumber, email,agree,selection,feedback) => (dispatch) => {
+    const newFeedback = {
+        firstName: firstName,
+        lastName : lastName, 
+        telNumber: telNumber,
+        email    : email,
+        agree    : agree,
+        selection: selection,
+        feedback : feedback
+    };
+    
+    return fetch(baseUrl + 'feedback', {
+        method:'POST',
+        body: JSON.stringify(newFeedback),
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        credentials: 'same-origin'
+    })
+    .then(response => {
+        if ( response.ok) {
+            return response;
+        }
+        else {
+            var error = new Error('Error ' + response.status + ': ' + response.statusText);
+            error.response = response;
+            throw error;
+        }
+    }, error => {
+            var errmess = new Error( error.message);
+            throw errmess;
+    })
+    .then(response => response.json())
+    .then(response => dispatch(addFeedback(response)))
+    .catch(error =>  { console.log('post feedback', error.message);
+                       alert('Your feedback could not be posted\nError: ' + error.message); });
+};
