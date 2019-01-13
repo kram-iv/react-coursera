@@ -2,6 +2,8 @@ import React from 'react';
 import { Breadcrumb, BreadcrumbItem, Card, CardBody, CardHeader, Media } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { baseUrl } from '../shared/baseUrl';
+import { Loading } from './LoadingComponent';
+import { Fade, Stagger } from 'react-animation-components';
 
 function RenderLeader({ leader }) {
     return (
@@ -20,14 +22,40 @@ function RenderLeader({ leader }) {
 
 function About(props) {
 
-    const leaders = props.leaders.leaders.map((leader) => {
-        return (
-            <div key={leader.id} className="row">
-                <RenderLeader leader={leader} />
-            </div>
+    var leaders;
+    if (props.leaders.isLoading) {
+        return(
+            <div className="container">
+                <div className="row">            
+                    <Loading />
+                </div>
+            </div>                
         );
-    });
-
+    }
+    else if (props.leaders.errMess) {
+        return(
+            <div className="container">
+                <div className="row">            
+                    <h4>{props.leaders.errMess}</h4>
+                </div>
+            </div>           
+        );
+    }
+    else
+    {
+        leaders =
+            <Stagger in>  
+                {props.leaders.leaders.map((leader) => {
+                    return (
+                        <Fade in key={leader.id}>
+                            <div className="row">
+                                <RenderLeader leader={leader} />
+                            </div>
+                        </Fade>
+                    );
+                })}
+            </Stagger>
+    }
     return(
         <div className="container">
             <div className="row">

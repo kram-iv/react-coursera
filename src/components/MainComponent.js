@@ -34,12 +34,12 @@ const mapStateToProps = state => {
 }
 
 class Main extends Component {
-
+/*
   constructor(props) {
     super(props);
 
   }
-  
+*/
   /*componentDidMount is a  lifecycle method */
   /* fetchDishes() will be called once component gets mounted in the view of the application.
    After it gets mounted the fetchDishes is called 

@@ -27,6 +27,7 @@ export const postComment = (dishId, rating, author, comment) => (dispatch) => {
     })
     .then(response => {
         if ( response.ok) {
+            alert(JSON.stringify(newComment));
             return response;
         }
         else {
@@ -201,16 +202,17 @@ export const addFeedback = ( feedback) => ({
 
 /* postFeedback is a thunk */
 /* dispatch is a function which needs to be added to postFeedback thunk function.Thunk is a function of function.*/
-export const postFeedback = (firstName, lastName, telNumber, email,agree,selection,feedback) => (dispatch) => {
+export const postFeedback = (firstName, lastName, telNumber, email,agree,contactType,feedback ) => (dispatch) => {
     const newFeedback = {
-        firstName: firstName,
-        lastName : lastName, 
-        telNumber: telNumber,
-        email    : email,
-        agree    : agree,
-        selection: selection,
-        feedback : feedback
+        firstName  : firstName,
+        lastName   : lastName, 
+        telNumber  : telNumber,
+        email      : email,
+        agree      : agree,
+        contactType: contactType,
+        feedback   : feedback
     };
+    newFeedback.date = new Date().toISOString();
     
     return fetch(baseUrl + 'feedback', {
         method:'POST',
